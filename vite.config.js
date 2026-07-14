@@ -5,7 +5,7 @@ import path from "path";
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 8080,
+    port: 8888,
     proxy: {
       "/api": {
         target: process.env.PROXY_URL || "http://localhost:8080",
@@ -22,11 +22,11 @@ export default defineConfig({
     include: ["prop-types"],
   },
   build: {
-    rollupOptions: {
+    rolldownOptions: {
       output: {
         manualChunks(id) {
           if (id.includes("prop-types")) return "prop-types";
-	}
+        },
       },
     },
     commonjsOptions: {
