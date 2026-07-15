@@ -1,61 +1,66 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getCategories, createCategory, updateCategory, deleteCategory } from '../api';
-import Spinner from './Spinner';
+import React, { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  getCategories,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+} from "../api";
+import Spinner from "./Spinner";
 
 const CategoryManager = () => {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [formData, setFormData] = useState({
-    name: '',
-    type: 'expense',
-    color: '#6B7280'
+    name: "",
+    type: "expense",
+    color: "#6B7280",
   });
 
   const { data: categories, isLoading } = useQuery({
-    queryKey: ['categories'],
-    queryFn: getCategories
+    queryKey: ["categories"],
+    queryFn: getCategories,
   });
 
   const createMutation = useMutation({
     mutationFn: createCategory,
     onSuccess: () => {
-      queryClient.invalidateQueries(['categories']);
+      queryClient.invalidateQueries(["categories"]);
       setIsModalOpen(false);
       resetForm();
-    }
+    },
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => updateCategory(id, data),
+    mutationFn: (payload) => updateCategory(payload.id, payload.data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['categories']);
+      queryClient.invalidateQueries(["categories"]);
       setIsModalOpen(false);
       setSelectedCategory(null);
       resetForm();
-    }
+    },
   });
 
   const deleteMutation = useMutation({
     mutationFn: deleteCategory,
     onSuccess: () => {
-      queryClient.invalidateQueries(['categories']);
-    }
+      queryClient.invalidateQueries(["categories"]);
+    },
   });
 
   const resetForm = () => {
     setFormData({
-      name: '',
-      type: 'expense',
-      color: '#6B7280'
+      name: "",
+      type: "expense",
+      color: "#6B7280",
     });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (selectedCategory) {
-      updateMutation.mutate({ id: selectedCategory.id, data: formData });
+      updateMutation.mutate({ id: selectedCategory._id, data: formData });
     } else {
       createMutation.mutate(formData);
     }
@@ -66,13 +71,17 @@ const CategoryManager = () => {
     setFormData({
       name: category.name,
       type: category.type,
-      color: category.color
+      color: category.color,
     });
     setIsModalOpen(true);
   };
 
   const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this category? All associated transactions will be affected.')) {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this category? All associated transactions will be affected.",
+      )
+    ) {
       deleteMutation.mutate(id);
     }
   };
@@ -81,8 +90,9 @@ const CategoryManager = () => {
     return <Spinner />;
   }
 
-  const expenseCategories = categories?.filter(c => c.type === 'expense') || [];
-  const incomeCategories = categories?.filter(c => c.type === 'income') || [];
+  const expenseCategories =
+    categories?.filter((c) => c.type === "expense") || [];
+  const incomeCategories = categories?.filter((c) => c.type === "income") || [];
 
   return (
     <div className="p-6">
@@ -108,7 +118,7 @@ const CategoryManager = () => {
           <div className="space-y-3">
             {expenseCategories.map((category) => (
               <div
-                key={category.id}
+                key={category._id}
                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
               >
                 <div className="flex items-center space-x-3">
@@ -126,7 +136,7 @@ const CategoryManager = () => {
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(category.id)}
+                    onClick={() => handleDelete(category._id)}
                     className="text-red-600 hover:text-red-900"
                   >
                     Delete
@@ -178,24 +188,32 @@ const CategoryManager = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg p-6 max-w-md w-full">
             <h2 className="text-xl font-semibold mb-4">
-              {selectedCategory ? 'Edit Category' : 'Add Category'}
+              {selectedCategory ? "Edit Category" : "Add Category"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Name</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Name
+                </label>
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Type</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Type
+                </label>
                 <select
                   value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, type: e.target.value })
+                  }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 >
                   <option value="expense">Expense</option>
@@ -203,11 +221,15 @@ const CategoryManager = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Color</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Color
+                </label>
                 <input
                   type="color"
                   value={formData.color}
-                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, color: e.target.value })
+                  }
                   className="mt-1 block w-full h-10 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
@@ -227,7 +249,7 @@ const CategoryManager = () => {
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                 >
-                  {selectedCategory ? 'Update' : 'Add'}
+                  {selectedCategory ? "Update" : "Add"}
                 </button>
               </div>
             </form>
@@ -238,4 +260,4 @@ const CategoryManager = () => {
   );
 };
 
-export default CategoryManager; 
+export default CategoryManager;

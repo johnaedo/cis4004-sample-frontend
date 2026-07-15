@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getBudgets, createBudget, updateBudget, deleteBudget } from '../api';
-import { getCategories } from '../api';
-import Spinner from './Spinner';
-import BudgetDetailsModal from './BudgetDetailsModal';
+import React, { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getBudgets, createBudget, updateBudget, deleteBudget } from "../api";
+import { getCategories } from "../api";
+import Spinner from "./Spinner";
+import BudgetDetailsModal from "./BudgetDetailsModal";
+import { formatToInputDate, formatToUIDate } from "../utils/dateHelpers";
 
 const BudgetManager = () => {
   const queryClient = useQueryClient();
@@ -11,51 +12,51 @@ const BudgetManager = () => {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedBudget, setSelectedBudget] = useState(null);
   const [formData, setFormData] = useState({
-    category_id: '',
-    amount: '',
-    start_date: '',
-    end_date: ''
+    category_id: "",
+    amount: "",
+    startDate: "",
+    endDate: "",
   });
 
   const { data: budgets, isLoading: isLoadingBudgets } = useQuery({
-    queryKey: ['budgets'],
-    queryFn: getBudgets
+    queryKey: ["budgets"],
+    queryFn: getBudgets,
   });
 
   const { data: categories, isLoading: isLoadingCategories } = useQuery({
-    queryKey: ['categories'],
-    queryFn: getCategories
+    queryKey: ["categories"],
+    queryFn: getCategories,
   });
 
   const createMutation = useMutation({
     mutationFn: createBudget,
     onSuccess: () => {
-      queryClient.invalidateQueries(['budgets']);
+      queryClient.invalidateQueries(["budgets"]);
       resetForm();
-    }
+    },
   });
 
   const updateMutation = useMutation({
     mutationFn: updateBudget,
     onSuccess: () => {
-      queryClient.invalidateQueries(['budgets']);
+      queryClient.invalidateQueries(["budgets"]);
       resetForm();
-    }
+    },
   });
 
   const deleteMutation = useMutation({
     mutationFn: deleteBudget,
     onSuccess: () => {
-      queryClient.invalidateQueries(['budgets']);
-    }
+      queryClient.invalidateQueries(["budgets"]);
+    },
   });
 
   const resetForm = () => {
     setFormData({
-      category_id: '',
-      amount: '',
-      start_date: '',
-      end_date: ''
+      category_id: "",
+      amount: "",
+      startDate: "",
+      endDate: "",
     });
     setSelectedBudget(null);
     setIsModalOpen(false);
@@ -65,11 +66,11 @@ const BudgetManager = () => {
     e.preventDefault();
     const budgetData = {
       ...formData,
-      amount: parseFloat(formData.amount)
+      amount: parseFloat(formData.amount),
     };
 
     if (selectedBudget) {
-      updateMutation.mutate([selectedBudget.id, budgetData]);
+      updateMutation.mutate([selectedBudget._id, budgetData]);
     } else {
       createMutation.mutate(budgetData);
     }
@@ -80,14 +81,14 @@ const BudgetManager = () => {
     setFormData({
       category_id: budget.category_id,
       amount: budget.amount.toString(),
-      start_date: budget.start_date,
-      end_date: budget.end_date
+      startDate: formatToInputDate(budget.startDate),
+      endDate: formatToInputDate(budget.endDate),
     });
     setIsModalOpen(true);
   };
 
   const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this budget?')) {
+    if (window.confirm("Are you sure you want to delete this budget?")) {
       deleteMutation.mutate(id);
     }
   };
@@ -117,15 +118,17 @@ const BudgetManager = () => {
       <div className="grid gap-6">
         {budgets?.map((budget) => (
           <div
-            key={budget.id}
+            key={budget._id}
             className="bg-white p-6 rounded-lg shadow-md flex justify-between items-center"
           >
             <div>
               <h3 className="font-semibold text-lg">
-                {categories?.find(c => c.id === budget.category_id)?.name}
+                {categories?.find((c) => c.id === budget.category_id)?.name}
               </h3>
               <p className="text-gray-600">
-                ${Number(budget.amount).toFixed(2)} - From {new Date(budget.start_date).toLocaleDateString()} to {new Date(budget.end_date).toLocaleDateString()}
+                ${Number(budget.amount).toFixed(2)} - From{" "}
+                {formatToUIDate(budget.startDate)} to{" "}
+                {formatToUIDate(budget.endDate)}
               </p>
             </div>
             <div className="flex gap-2">
@@ -157,31 +160,39 @@ const BudgetManager = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg w-full max-w-md">
             <h3 className="text-xl font-semibold mb-4">
-              {selectedBudget ? 'Edit Budget' : 'Create Budget'}
+              {selectedBudget ? "Edit Budget" : "Create Budget"}
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Category</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Category
+                </label>
                 <select
                   value={formData.category_id}
-                  onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category_id: e.target.value })
+                  }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                   required
                 >
                   <option value="">Select a category</option>
                   {categories?.map((category) => (
-                    <option key={category.id} value={category.id}>
+                    <option key={category._id} value={category._id}>
                       {category.name}
                     </option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Amount</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Amount
+                </label>
                 <input
                   type="number"
                   value={formData.amount}
-                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, amount: e.target.value })
+                  }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                   required
                   min="0"
@@ -189,21 +200,29 @@ const BudgetManager = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Start Date</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Start Date
+                </label>
                 <input
                   type="date"
-                  value={formData.start_date}
-                  onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                  value={formData.startDate}
+                  onChange={(e) =>
+                    setFormData({ ...formData, startDate: e.target.value })
+                  }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">End Date</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  End Date
+                </label>
                 <input
                   type="date"
-                  value={formData.end_date}
-                  onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+                  value={formData.endDate}
+                  onChange={(e) =>
+                    setFormData({ ...formData, endDate: e.target.value })
+                  }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                   required
                 />
@@ -220,7 +239,7 @@ const BudgetManager = () => {
                   type="submit"
                   className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
                 >
-                  {selectedBudget ? 'Update' : 'Create'}
+                  {selectedBudget ? "Update" : "Create"}
                 </button>
               </div>
             </form>
@@ -242,4 +261,4 @@ const BudgetManager = () => {
   );
 };
 
-export default BudgetManager; 
+export default BudgetManager;

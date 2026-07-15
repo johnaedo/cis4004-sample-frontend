@@ -1,7 +1,7 @@
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { getBudgetTransactions } from '../api';
-import Spinner from './Spinner';
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getBudgetTransactions } from "../api";
+import Spinner from "./Spinner";
 import {
   LineChart,
   Line,
@@ -10,13 +10,14 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer
-} from 'recharts';
+  ResponsiveContainer,
+} from "recharts";
+import { formatToUIDate } from "../utils/dateHelpers";
 
 const BudgetDetailsModal = ({ budget, onClose }) => {
   const { data, isLoading } = useQuery({
-    queryKey: ['budgetTransactions', budget.id],
-    queryFn: () => getBudgetTransactions(budget.id)
+    queryKey: ["budgetTransactions", budget._id],
+    queryFn: () => getBudgetTransactions(budget._id),
   });
 
   if (isLoading) {
@@ -28,9 +29,9 @@ const BudgetDetailsModal = ({ budget, onClose }) => {
   // Format the month for display
   const formatMonth = (dateStr) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('default', { 
-      month: 'long',
-      day: 'numeric'
+    return date.toLocaleDateString("default", {
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -44,7 +45,8 @@ const BudgetDetailsModal = ({ budget, onClose }) => {
                 {budget.category_name} Budget Details
               </h3>
               <p className="text-gray-600">
-                Period: {new Date(budget.start_date).toLocaleDateString()} to {new Date(budget.end_date).toLocaleDateString()}
+                Period: {formatToUIDate(budget.startDate)} to{" "}
+                {formatToUIDate(budget.endDate)}
               </p>
             </div>
             <button
@@ -56,14 +58,18 @@ const BudgetDetailsModal = ({ budget, onClose }) => {
           </div>
 
           <div className="mb-6">
-            <h4 className="text-lg font-medium text-gray-700 mb-2">Budget Amount</h4>
+            <h4 className="text-lg font-medium text-gray-700 mb-2">
+              Budget Amount
+            </h4>
             <p className="text-2xl font-bold text-indigo-600">
               ${Number(budget.amount).toFixed(2)}
             </p>
           </div>
 
           <div className="h-[400px] mb-6">
-            <h4 className="text-lg font-medium text-gray-700 mb-4">Monthly Transactions</h4>
+            <h4 className="text-lg font-medium text-gray-700 mb-4">
+              Monthly Transactions
+            </h4>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={transactions}
@@ -75,8 +81,8 @@ const BudgetDetailsModal = ({ budget, onClose }) => {
                 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="month" 
+                <XAxis
+                  dataKey="month"
                   tickFormatter={formatMonth}
                   angle={-45}
                   textAnchor="end"
@@ -84,7 +90,7 @@ const BudgetDetailsModal = ({ budget, onClose }) => {
                   interval={0}
                 />
                 <YAxis />
-                <Tooltip 
+                <Tooltip
                   formatter={(value) => `$${value.toFixed(2)}`}
                   labelFormatter={formatMonth}
                 />
@@ -122,4 +128,4 @@ const BudgetDetailsModal = ({ budget, onClose }) => {
   );
 };
 
-export default BudgetDetailsModal; 
+export default BudgetDetailsModal;
