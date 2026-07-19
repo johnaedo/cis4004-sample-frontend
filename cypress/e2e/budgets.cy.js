@@ -3,13 +3,13 @@
 // Tests for the Budget Manager page (CRUD + summary display).
 
 const CATEGORIES = [
-  { id: 1, name: 'Food', type: 'expense', color: '#FF5733' },
-  { id: 2, name: 'Utilities', type: 'expense', color: '#3498DB' },
+  { _id: 1, name: 'Food', type: 'expense', color: '#FF5733' },
+  { _id: 2, name: 'Utilities', type: 'expense', color: '#3498DB' },
 ];
 
 const BUDGETS = [
   {
-    id: 1,
+    _id: 1,
     category_id: 1,
     category_name: 'Food',
     amount: 400,
@@ -18,7 +18,7 @@ const BUDGETS = [
     remaining: 250,
   },
   {
-    id: 2,
+    _id: 2,
     category_id: 2,
     category_name: 'Utilities',
     amount: 200,
@@ -71,7 +71,7 @@ describe('Budget Manager', () => {
 
   it('creates a new budget', () => {
     const newBudget = {
-      id: 3,
+      _id: 3,
       category_id: 1,
       category_name: 'Food',
       amount: 300,

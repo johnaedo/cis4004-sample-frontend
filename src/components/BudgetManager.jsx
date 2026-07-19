@@ -110,49 +110,65 @@ const BudgetManager = () => {
           onClick={() => setIsModalOpen(true)}
           className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
         >
-          Create Budget
+          Add Budget
         </button>
       </div>
 
       {/* Budget List */}
-      <div className="grid gap-6">
-        {budgets?.map((budget) => (
-          <div
-            key={budget._id}
-            className="bg-white p-6 rounded-lg shadow-md flex justify-between items-center"
-          >
-            <div>
-              <h3 className="font-semibold text-lg">
-                {categories?.find((c) => c.id === budget.category_id)?.name}
-              </h3>
-              <p className="text-gray-600">
-                ${Number(budget.amount).toFixed(2)} - From{" "}
-                {formatToUIDate(budget.startDate)} to{" "}
-                {formatToUIDate(budget.endDate)}
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleViewDetails(budget)}
-                className="px-3 py-1 text-blue-600 hover:bg-blue-50 rounded"
-              >
-                View Details
-              </button>
-              <button
-                onClick={() => handleEdit(budget)}
-                className="px-3 py-1 text-indigo-600 hover:bg-indigo-50 rounded"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDelete(budget.id)}
-                className="px-3 py-1 text-red-600 hover:bg-red-50 rounded"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Category
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Amount
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Period
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {budgets?.map((budget) => (
+              <tr key={budget._id}>
+                <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                  {categories?.find((c) => c._id === budget.category_id)?.name}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-gray-600">
+                  ${Number(budget.amount).toFixed(2)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-gray-600">
+                  From {formatToUIDate(budget.startDate)} to {formatToUIDate(budget.endDate)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm flex gap-2">
+                  <button
+                    onClick={() => handleViewDetails(budget)}
+                    className="text-blue-600 hover:text-blue-900"
+                  >
+                    View Details
+                  </button>
+                  <button
+                    onClick={() => handleEdit(budget)}
+                    className="text-indigo-600 hover:text-indigo-900"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(budget._id)}
+                    className="text-red-600 hover:text-red-900"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       {/* Budget Form Modal */}
@@ -199,7 +215,7 @@ const BudgetManager = () => {
                   step="0.01"
                 />
               </div>
-              <div>
+               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Start Date
                 </label>
@@ -210,10 +226,9 @@ const BudgetManager = () => {
                     setFormData({ ...formData, startDate: e.target.value })
                   }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                  required
                 />
               </div>
-              <div>
+               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   End Date
                 </label>
@@ -224,7 +239,6 @@ const BudgetManager = () => {
                     setFormData({ ...formData, endDate: e.target.value })
                   }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                  required
                 />
               </div>
               <div className="flex justify-end gap-2 mt-6">
@@ -239,7 +253,7 @@ const BudgetManager = () => {
                   type="submit"
                   className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
                 >
-                  {selectedBudget ? "Update" : "Create"}
+                  Save
                 </button>
               </div>
             </form>

@@ -17,7 +17,7 @@ const SavingsGoals = () => {
   
   const [goals, setGoals] = useState([
     {
-      id: 1,
+      _id: 1,
       name: "Emergency Fund",
       target: 10000,
       current: 3500,
@@ -27,7 +27,7 @@ const SavingsGoals = () => {
       icon: "🛡️"
     },
     {
-      id: 2,
+      _id: 2,
       name: "Vacation Fund",
       target: 5000,
       current: 2000,
@@ -37,7 +37,7 @@ const SavingsGoals = () => {
       icon: "✈️"
     },
     {
-      id: 3,
+      _id: 3,
       name: "New Car",
       target: 25000,
       current: 5000,
@@ -47,7 +47,7 @@ const SavingsGoals = () => {
       icon: "🚗"
     },
     {
-      id: 4,
+      _id: 4,
       name: "New house",
       target: 22222222,
       current: 0,
@@ -60,7 +60,7 @@ const SavingsGoals = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [newGoal, setNewGoal] = useState({
-    id: null,
+    _id: null,
     name: '',
     target: '',
     deadline: '',
@@ -93,7 +93,7 @@ const SavingsGoals = () => {
 
   const handleContribution = (id, amount) => {
     setGoals(goals.map(goal => {
-      if (goal.id === id) {
+      if (goal._id === id) {
         return {
           ...goal,
           current: Math.min(goal.current + parseFloat(amount || 0), goal.target)
@@ -125,7 +125,7 @@ const SavingsGoals = () => {
 
     if (isEditing) {
       setGoals(goals.map(goal => 
-        goal.id === newGoal.id 
+        goal._id === newGoal._id 
           ? { 
               ...newGoal, 
               target,
@@ -136,7 +136,7 @@ const SavingsGoals = () => {
       ));
     } else {
       const goal = {
-        id: Date.now(),
+        _id: Date.now(),
         ...newGoal,
         target,
         current: 0,
@@ -146,7 +146,7 @@ const SavingsGoals = () => {
     }
 
     setNewGoal({
-      id: null,
+      _id: null,
       name: '',
       target: '',
       deadline: '',
@@ -173,7 +173,7 @@ const SavingsGoals = () => {
             onClick={() => {
               setIsEditing(false);
               setNewGoal({
-                id: null,
+                _id: null,
                 name: '',
                 target: '',
                 deadline: '',
@@ -205,7 +205,7 @@ const SavingsGoals = () => {
             const nextMilestone = calculateNextMilestone(goal.current, goal.milestones);
 
             return (
-              <div key={goal.id} className="border rounded-lg p-4 space-y-4">
+              <div key={goal._id} className="border rounded-lg p-4 space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{goal.icon}</span>
@@ -279,7 +279,7 @@ const SavingsGoals = () => {
                       className="w-24 px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-teal-500 focus:outline-none"
                       onKeyPress={(e) => {
                         if (e.key === 'Enter') {
-                          handleContribution(goal.id, e.target.value);
+                          handleContribution(goal._id, e.target.value);
                           e.target.value = '';
                         }
                       }}
@@ -287,7 +287,7 @@ const SavingsGoals = () => {
                     <button
                       onClick={(event) => {
                         const input = event.target.previousSibling;
-                        handleContribution(goal.id, input.value);
+                        handleContribution(goal._id, input.value);
                         input.value = '';
                       }}
                       className="px-3 py-1 text-sm text-white bg-teal-500 rounded hover:bg-teal-600 transition-colors"
@@ -377,7 +377,7 @@ const SavingsGoals = () => {
                     setIsModalOpen(false);
                     setIsEditing(false);
                     setNewGoal({
-                      id: null,
+                      _id: null,
                       name: '',
                       target: '',
                       deadline: '',

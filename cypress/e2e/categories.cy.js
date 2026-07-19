@@ -3,9 +3,9 @@
 // Tests for the Category Manager page (CRUD operations).
 
 const CATEGORIES = [
-  { id: 1, name: 'Food', type: 'expense', color: '#FF5733' },
-  { id: 2, name: 'Salary', type: 'income', color: '#28B463' },
-  { id: 3, name: 'Utilities', type: 'expense', color: '#3498DB' },
+  { _id: 1, name: 'Food', type: 'expense', color: '#FF5733' },
+  { _id: 2, name: 'Salary', type: 'income', color: '#28B463' },
+  { _id: 3, name: 'Utilities', type: 'expense', color: '#3498DB' },
 ];
 
 describe('Category Manager', () => {
@@ -42,7 +42,7 @@ describe('Category Manager', () => {
   });
 
   it('creates a new expense category', () => {
-    const newCategory = { id: 4, name: 'Entertainment', type: 'expense', color: '#9B59B6' };
+    const newCategory = { _id: 4, name: 'Entertainment', type: 'expense', color: '#9B59B6' };
 
     cy.intercept('POST', '/api/categories', {
       statusCode: 201,

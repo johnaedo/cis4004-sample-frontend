@@ -32,8 +32,45 @@ Cypress.Commands.add('loginByUI', (identifier, password) => {
 //   );
 // ---------------------------------------------------------------------------
 Cypress.Commands.add('loginByLocalStorage', (user, token) => {
-  localStorage.setItem('user', JSON.stringify(user));
-  localStorage.setItem('token', token);
+  if (Cypress.env('NO_MOCK')) {
+    cy.fixture('auth').then((auth) => {
+      const credentials = auth.credentials;
+      const backendUrl = 'http://localhost:4001/api';
+      
+      cy.request({
+        method: 'POST',
+        url: `${backendUrl}/users/register`,
+        body: {
+          username: auth.user.username,
+          email: credentials.identifier,
+          password: credentials.password
+        },
+        failOnStatusCode: false
+      }).then(() => {
+        cy.request({
+          method: 'POST',
+          url: `${backendUrl}/users/login`,
+          body: {
+            identifier: credentials.identifier,
+            password: credentials.password
+          }
+        }).then((response) => {
+          const realUser = response.body.user;
+          const realToken = response.body.token;
+          
+          localStorage.setItem('user', JSON.stringify({
+            _id: realUser.id,
+            username: realUser.username,
+            email: realUser.email
+          }));
+          localStorage.setItem('token', realToken);
+        });
+      });
+    });
+  } else {
+    localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('token', token);
+  }
 });
 
 // ---------------------------------------------------------------------------

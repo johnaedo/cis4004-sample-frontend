@@ -41,7 +41,7 @@ const TransactionManager = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: (payload) => updateTransaction(payload.id, payload.data),
+    mutationFn: (payload) => updateTransaction(payload._id, payload.data),
     onSuccess: () => {
       queryClient.invalidateQueries(["transactions"]);
       setIsModalOpen(false);
@@ -76,7 +76,7 @@ const TransactionManager = () => {
     };
 
     if (selectedTransaction) {
-      updateMutation.mutate({ id: selectedTransaction._id, data });
+      updateMutation.mutate({ _id: selectedTransaction._id, data });
     } else {
       createMutation.mutate(data);
     }
@@ -108,80 +108,6 @@ const TransactionManager = () => {
 
   return (
     <div className="p-6">
-      {/* Add Transaction Button */}
-      <div className="mb-6">
-        <button
-          onClick={() => {
-            resetForm();
-            setSelectedTransaction(null);
-            setIsModalOpen(true);
-          }}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-        >
-          Add Transaction
-        </button>
-      </div>
-
-      {/* Transactions Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Date
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Description
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Category
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Amount
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {transactions?.map((transaction) => (
-              <tr key={transaction._id}>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {new Date(transaction.date).toLocaleDateString()}
-                </td>
-                <td className="px-6 py-4">{transaction.description}</td>
-                <td className="px-6 py-4">{transaction.category_name}</td>
-                <td
-                  className={`px-6 py-4 whitespace-nowrap font-medium ${
-                    transaction.type === "income"
-                      ? "text-green-600"
-                      : "text-red-600"
-                  }`}
-                >
-                  {transaction.type === "income" ? "+" : "-"}$
-                  {Math.abs(transaction.amount).toFixed(2)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <button
-                    onClick={() => handleEdit(transaction)}
-                    className="text-blue-600 hover:text-blue-900 mr-4"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(transaction._id)}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
       {/* Transaction Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
@@ -293,6 +219,81 @@ const TransactionManager = () => {
           </div>
         </div>
       )}
+
+      {/* Add Transaction Button */}
+      <div className="mb-6">
+        <button
+          onClick={() => {
+            resetForm();
+            setSelectedTransaction(null);
+            setIsModalOpen(true);
+          }}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+          Add Transaction
+        </button>
+      </div>
+
+      {/* Transactions Table */}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Date
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Description
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Category
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Amount
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {transactions?.map((transaction) => (
+              <tr key={transaction._id}>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {new Date(transaction.date).toLocaleDateString()}
+                </td>
+                <td className="px-6 py-4">{transaction.description}</td>
+                <td className="px-6 py-4">{transaction.category_name}</td>
+                <td
+                  className={`px-6 py-4 whitespace-nowrap font-medium ${
+                    transaction.type === "income"
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  {transaction.type === "income" ? "+" : "-"}$
+                  {Math.abs(transaction.amount).toFixed(2)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <button
+                    onClick={() => handleEdit(transaction)}
+                    className="text-blue-600 hover:text-blue-900 mr-4"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(transaction._id)}
+                    className="text-red-600 hover:text-red-900"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
     </div>
   );
 };

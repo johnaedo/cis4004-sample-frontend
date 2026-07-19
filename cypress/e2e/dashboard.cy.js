@@ -2,36 +2,38 @@
 //
 // Tests for the Budget Dashboard (the home / "/" route).
 
-const SUMMARY = {
-  totalIncome: 3000,
-  totalExpenses: 1200,
-  netSavings: 1800,
-  recentTransactions: [
-    {
-      id: 1,
-      description: 'Grocery shopping',
-      amount: 50,
-      type: 'expense',
-      date: '2024-06-01',
-      category_name: 'Food',
-    },
-    {
-      id: 2,
-      description: 'Monthly salary',
-      amount: 3000,
-      type: 'income',
-      date: '2024-06-01',
-      category_name: 'Salary',
-    },
-  ],
-};
+const SUMMARY = [
+  { type: 'income', total_amount: 3000, transaction_count: 1 },
+  { type: 'expense', total_amount: 1200, transaction_count: 1 }
+];
+
+const RECENT_TRANSACTIONS = [
+  {
+    _id: 1,
+    amount: 50,
+    description: 'Grocery shopping',
+    category_id: 1,
+    category_name: 'Food',
+    date: '2024-06-01',
+    type: 'expense',
+  },
+  {
+    _id: 2,
+    amount: 3000,
+    description: 'Monthly salary',
+    category_id: 2,
+    category_name: 'Salary',
+    date: '2024-06-01',
+    type: 'income',
+  },
+];
 
 const BUDGET_SUMMARY = [
   {
-    id: 1,
+    _id: 1,
     category_name: 'Food',
-    amount: 400,
-    spent: 150,
+    budget_amount: 400,
+    spent_amount: 150,
     remaining: 250,
     period: 'monthly',
   },
@@ -45,7 +47,7 @@ describe('Budget Dashboard', () => {
 
     cy.intercept('GET', '/api/transactions/summary*', { body: SUMMARY }).as('getSummary');
     cy.intercept('GET', '/api/budgets/summary*', { body: BUDGET_SUMMARY }).as('getBudgetSummary');
-    cy.intercept('GET', '/api/transactions*', { body: SUMMARY.recentTransactions }).as('getTransactions');
+    cy.intercept('GET', '/api/transactions*', { body: RECENT_TRANSACTIONS }).as('getTransactions');
     cy.intercept('GET', '/api/budgets*', { body: BUDGET_SUMMARY }).as('getBudgets');
 
     cy.visit('/');
@@ -88,7 +90,7 @@ describe('Budget Dashboard', () => {
   // -------------------------------------------------------------------------
   it('handles an empty summary gracefully (no crash)', () => {
     cy.intercept('GET', '/api/transactions/summary*', {
-      body: { totalIncome: 0, totalExpenses: 0, netSavings: 0, recentTransactions: [] },
+      body: [],
     }).as('emptySummary');
     cy.intercept('GET', '/api/budgets/summary*', { body: [] }).as('emptyBudgets');
 

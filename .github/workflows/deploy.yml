@@ -1,0 +1,57 @@
+name: Deploy Frontend to DigitalOcean
+
+on:
+  push:
+    branches:
+      - main
+      - master # Triggers on push to main or master branches
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run CI Tests
+        uses: cypress-io/github-action@v6
+        with:
+          start: npm run dev
+          wait-on: 'http://localhost:8888'
+          command: npm run cy:run
+
+      - name: Build Application
+        run: npm run build
+        env:
+          # If the frontend needs to know the production API URL during compilation
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
+      - name: Deploy to DigitalOcean Droplet via Rsync
+        env:
+          SSH_KEY: ${{ secrets.DROPLET_SSH_KEY }}
+          HOST: ${{ secrets.DROPLET_IP }}
+          USER: ${{ secrets.DROPLET_USER }}
+          TARGET_DIR: "/var/www/budget-planner"
+        run: |
+          # Create SSH config and load credentials
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
+          
+          # Ensure target directory exists on the droplet
+          ssh "$USER@$HOST" "mkdir -p $TARGET_DIR"
+          
+          # Deploy built assets (dist/) and clean up removed files
+          rsync -avz --delete dist/ "$USER@$HOST:$TARGET_DIR"

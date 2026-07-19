@@ -6,13 +6,13 @@
 // Sample data we'll reuse in multiple tests
 // ---------------------------------------------------------------------------
 const CATEGORIES = [
-  { id: 1, name: 'Food', type: 'expense', color: '#FF5733' },
-  { id: 2, name: 'Salary', type: 'income', color: '#28B463' },
+  { _id: 1, name: 'Food', type: 'expense', color: '#FF5733' },
+  { _id: 2, name: 'Salary', type: 'income', color: '#28B463' },
 ];
 
 const TRANSACTIONS = [
   {
-    id: 1,
+    _id: 1,
     amount: 50.0,
     description: 'Grocery shopping',
     category_id: 1,
@@ -21,7 +21,7 @@ const TRANSACTIONS = [
     type: 'expense',
   },
   {
-    id: 2,
+    _id: 2,
     amount: 3000.0,
     description: 'Monthly salary',
     category_id: 2,
@@ -75,7 +75,7 @@ describe('Transaction Manager', () => {
 
   it('adds a new expense transaction', () => {
     const newTransaction = {
-      id: 3,
+      _id: 3,
       amount: 25.0,
       description: 'Coffee',
       category_id: 1,
@@ -112,7 +112,7 @@ describe('Transaction Manager', () => {
   it('adds a new income transaction', () => {
     cy.intercept('POST', '/api/transactions', {
       statusCode: 201,
-      body: { id: 4, amount: 500, description: 'Freelance', type: 'income' },
+      body: { _id: 4, amount: 500, description: 'Freelance', type: 'income' },
     }).as('createIncome');
 
     cy.contains('button', 'Add Transaction').click();

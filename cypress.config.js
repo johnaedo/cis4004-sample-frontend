@@ -4,7 +4,7 @@ export default defineConfig({
   e2e: {
     // The base URL of your running dev server.
     // Cypress will prepend this to every cy.visit() call.
-    baseUrl: 'http://localhost:8080',
+    baseUrl: 'http://localhost:8888',
 
     // Where Cypress looks for test files
     specPattern: 'cypress/e2e/**/*.cy.{js,jsx}',
@@ -23,6 +23,6 @@ export default defineConfig({
     video: false,
 
     // Keep screenshots on failure
-    screenshotOnRunFailure: true,
+    screenshotOnRunFailure: false,
   },
 });

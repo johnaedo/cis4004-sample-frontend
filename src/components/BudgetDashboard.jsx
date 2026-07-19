@@ -187,7 +187,7 @@ const BudgetDashboard = () => {
               const health = getHealthStatus(budget.spent_amount, budget.budget_amount);
               const HealthIcon = health.icon;
               return (
-                <div key={budget.id} className="space-y-3">
+                <div key={budget._id} className="space-y-3">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3">
                       <div className="w-5 h-5 rounded-full" style={{ backgroundColor: budget.category_color }} />
@@ -214,6 +214,35 @@ const BudgetDashboard = () => {
                 </div>
               );
             })
+          )}
+        </div>
+      </div>
+
+      {/* Recent Transactions */}
+      <div className="bg-white rounded-xl shadow-md p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-semibold text-gray-800">Recent Transactions</h3>
+          <Link to="/transactions" className="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+            View All →
+          </Link>
+        </div>
+        <div className="divide-y divide-gray-100">
+          {!recentTransactions || recentTransactions.length === 0 ? (
+            <p className="text-gray-500 py-4 text-center">No recent transactions</p>
+          ) : (
+            recentTransactions.map((transaction) => (
+              <div key={transaction._id} className="flex justify-between items-center py-3">
+                <div>
+                  <p className="font-medium text-gray-800">{transaction.description}</p>
+                  <p className="text-xs text-gray-500">
+                    {new Date(transaction.date).toLocaleDateString()} • {transaction.category_name}
+                  </p>
+                </div>
+                <span className={`font-semibold ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                  {transaction.type === 'income' ? '+' : '-'}${Math.abs(transaction.amount).toFixed(2)}
+                </span>
+              </div>
+            ))
           )}
         </div>
       </div>

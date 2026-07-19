@@ -33,7 +33,7 @@ const CategoryManager = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: (payload) => updateCategory(payload.id, payload.data),
+    mutationFn: (payload) => updateCategory(payload._id, payload.data),
     onSuccess: () => {
       queryClient.invalidateQueries(["categories"]);
       setIsModalOpen(false);
@@ -60,7 +60,7 @@ const CategoryManager = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (selectedCategory) {
-      updateMutation.mutate({ id: selectedCategory._id, data: formData });
+      updateMutation.mutate({ _id: selectedCategory._id, data: formData });
     } else {
       createMutation.mutate(formData);
     }
@@ -115,71 +115,73 @@ const CategoryManager = () => {
         {/* Expense Categories */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold mb-4">Expense Categories</h3>
-          <div className="space-y-3">
-            {expenseCategories.map((category) => (
-              <div
-                key={category._id}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-              >
-                <div className="flex items-center space-x-3">
-                  <div
-                    className="w-4 h-4 rounded-full"
-                    style={{ backgroundColor: category.color }}
-                  ></div>
-                  <span>{category.name}</span>
-                </div>
-                <div>
-                  <button
-                    onClick={() => handleEdit(category)}
-                    className="text-blue-600 hover:text-blue-900 mr-3"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(category._id)}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+          <table className="min-w-full">
+            <tbody className="divide-y divide-gray-100">
+              {expenseCategories.map((category) => (
+                <tr key={category._id} className="hover:bg-gray-50">
+                  <td className="p-3">
+                    <div className="flex items-center space-x-3">
+                      <div
+                        className="w-4 h-4 rounded-full"
+                        style={{ backgroundColor: category.color }}
+                      ></div>
+                      <span>{category.name}</span>
+                    </div>
+                  </td>
+                  <td className="p-3 text-right">
+                    <button
+                      onClick={() => handleEdit(category)}
+                      className="text-blue-600 hover:text-blue-900 mr-3"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(category._id)}
+                      className="text-red-600 hover:text-red-900"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
         {/* Income Categories */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold mb-4">Income Categories</h3>
-          <div className="space-y-3">
-            {incomeCategories.map((category) => (
-              <div
-                key={category.id}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-              >
-                <div className="flex items-center space-x-3">
-                  <div
-                    className="w-4 h-4 rounded-full"
-                    style={{ backgroundColor: category.color }}
-                  ></div>
-                  <span>{category.name}</span>
-                </div>
-                <div>
-                  <button
-                    onClick={() => handleEdit(category)}
-                    className="text-blue-600 hover:text-blue-900 mr-3"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(category.id)}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+          <table className="min-w-full">
+            <tbody className="divide-y divide-gray-100">
+              {incomeCategories.map((category) => (
+                <tr key={category._id} className="hover:bg-gray-50">
+                  <td className="p-3">
+                    <div className="flex items-center space-x-3">
+                      <div
+                        className="w-4 h-4 rounded-full"
+                        style={{ backgroundColor: category.color }}
+                      ></div>
+                      <span>{category.name}</span>
+                    </div>
+                  </td>
+                  <td className="p-3 text-right">
+                    <button
+                      onClick={() => handleEdit(category)}
+                      className="text-blue-600 hover:text-blue-900 mr-3"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(category._id)}
+                      className="text-red-600 hover:text-red-900"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -249,7 +251,7 @@ const CategoryManager = () => {
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                 >
-                  {selectedCategory ? "Update" : "Add"}
+                  Save
                 </button>
               </div>
             </form>
