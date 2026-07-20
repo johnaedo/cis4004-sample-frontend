@@ -31,7 +31,7 @@ const BudgetManager = () => {
   const createMutation = useMutation({
     mutationFn: createBudget,
     onSuccess: () => {
-      queryClient.invalidateQueries(["budgets"]);
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
       resetForm();
     },
   });
@@ -39,7 +39,7 @@ const BudgetManager = () => {
   const updateMutation = useMutation({
     mutationFn: updateBudget,
     onSuccess: () => {
-      queryClient.invalidateQueries(["budgets"]);
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
       resetForm();
     },
   });
@@ -47,7 +47,7 @@ const BudgetManager = () => {
   const deleteMutation = useMutation({
     mutationFn: deleteBudget,
     onSuccess: () => {
-      queryClient.invalidateQueries(["budgets"]);
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
     },
   });
 

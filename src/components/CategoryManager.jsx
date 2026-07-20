@@ -12,6 +12,7 @@ const CategoryManager = () => {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     type: "expense",
@@ -26,26 +27,32 @@ const CategoryManager = () => {
   const createMutation = useMutation({
     mutationFn: createCategory,
     onSuccess: () => {
-      queryClient.invalidateQueries(["categories"]);
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
       setIsModalOpen(false);
       resetForm();
+    },
+    onError: (err) => {
+      setError(err.error || err.message || "Failed to create category");
     },
   });
 
   const updateMutation = useMutation({
     mutationFn: (payload) => updateCategory(payload._id, payload.data),
     onSuccess: () => {
-      queryClient.invalidateQueries(["categories"]);
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
       setIsModalOpen(false);
       setSelectedCategory(null);
       resetForm();
+    },
+    onError: (err) => {
+      setError(err.error || err.message || "Failed to update category");
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: deleteCategory,
     onSuccess: () => {
-      queryClient.invalidateQueries(["categories"]);
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
     },
   });
 
@@ -55,6 +62,7 @@ const CategoryManager = () => {
       type: "expense",
       color: "#6B7280",
     });
+    setError(null);
   };
 
   const handleSubmit = (e) => {
@@ -129,18 +137,22 @@ const CategoryManager = () => {
                     </div>
                   </td>
                   <td className="p-3 text-right">
-                    <button
-                      onClick={() => handleEdit(category)}
-                      className="text-blue-600 hover:text-blue-900 mr-3"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(category._id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      Delete
-                    </button>
+                    {category.user !== null && (
+                      <>
+                        <button
+                          onClick={() => handleEdit(category)}
+                          className="text-blue-600 hover:text-blue-900 mr-3"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(category._id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -165,18 +177,22 @@ const CategoryManager = () => {
                     </div>
                   </td>
                   <td className="p-3 text-right">
-                    <button
-                      onClick={() => handleEdit(category)}
-                      className="text-blue-600 hover:text-blue-900 mr-3"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(category._id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      Delete
-                    </button>
+                    {category.user !== null && (
+                      <>
+                        <button
+                          onClick={() => handleEdit(category)}
+                          className="text-blue-600 hover:text-blue-900 mr-3"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(category._id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -192,6 +208,11 @@ const CategoryManager = () => {
             <h2 className="text-xl font-semibold mb-4">
               {selectedCategory ? "Edit Category" : "Add Category"}
             </h2>
+            {error && (
+              <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm mb-4">
+                {error}
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">

@@ -34,7 +34,7 @@ const TransactionManager = () => {
   const createMutation = useMutation({
     mutationFn: createTransaction,
     onSuccess: () => {
-      queryClient.invalidateQueries(["transactions"]);
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
       setIsModalOpen(false);
       resetForm();
     },
@@ -43,7 +43,7 @@ const TransactionManager = () => {
   const updateMutation = useMutation({
     mutationFn: (payload) => updateTransaction(payload._id, payload.data),
     onSuccess: () => {
-      queryClient.invalidateQueries(["transactions"]);
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
       setIsModalOpen(false);
       setSelectedTransaction(null);
       resetForm();
@@ -53,7 +53,7 @@ const TransactionManager = () => {
   const deleteMutation = useMutation({
     mutationFn: deleteTransaction,
     onSuccess: () => {
-      queryClient.invalidateQueries(["transactions"]);
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 
@@ -90,7 +90,9 @@ const TransactionManager = () => {
       categoryId: transaction.category_id
         ? transaction.category_id.toString()
         : "",
-      date: transaction.date,
+      date: transaction.date && !isNaN(new Date(transaction.date).getTime())
+        ? new Date(transaction.date).toISOString().split("T")[0]
+        : "",
       type: transaction.type,
     });
     setIsModalOpen(true);
