@@ -11,7 +11,7 @@ on:
       - main
       - master
       - development
-  workflow_dispatch:
+  workflow_dispatch: {}
 
 jobs:
   build-and-deploy:
@@ -45,7 +45,7 @@ jobs:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
       - name: Deploy to DigitalOcean Droplet via Rsync
-        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        if: "${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') }}"
         env:
           SSH_KEY: ${{ secrets.DROPLET_SSH_KEY }}
           HOST: ${{ secrets.DROPLET_IP }}
