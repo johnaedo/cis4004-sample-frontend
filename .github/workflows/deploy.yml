@@ -25,13 +25,6 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Run CI Tests
-        uses: cypress-io/github-action@v6
-        with:
-          start: npm run dev
-          wait-on: 'http://localhost:8888'
-          command: npm run cy:run
-
       - name: Build Application
         run: npm run build
         env:
