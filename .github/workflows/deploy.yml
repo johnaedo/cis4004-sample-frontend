@@ -4,7 +4,14 @@ on:
   push:
     branches:
       - main
-      - master # Triggers on push to main or master branches
+      - master
+      - development
+  pull_request:
+    branches:
+      - main
+      - master
+      - development
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -38,6 +45,7 @@ jobs:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
       - name: Deploy to DigitalOcean Droplet via Rsync
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
         env:
           SSH_KEY: ${{ secrets.DROPLET_SSH_KEY }}
           HOST: ${{ secrets.DROPLET_IP }}
