@@ -1,8 +1,13 @@
+# NOTE:  Due to issues I had with github, this is not fully correct.
+# It's not required for the assignment, but it's a good starting point
+# if you wish to earn extra credit by implementing CI for the front-end
+
 name: Frontend CI (Test and Build)
 
 on:
-  push:
-  pull_request:
+  # Uncomment these if you wish to integrate CI into your front-end.
+  # push:
+  # pull_request:
   workflow_dispatch: {}
 
 jobs:
