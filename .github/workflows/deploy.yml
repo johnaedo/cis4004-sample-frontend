@@ -28,8 +28,8 @@ jobs:
       - name: Build Application
         run: npm run build
         env:
-          # If the frontend needs to know the production API URL during compilation
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          # OPTIONAL: If the frontend needs to know the production API URL during compilation
+          # VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
       - name: Deploy to DigitalOcean Droplet via Rsync
         env:
@@ -43,9 +43,9 @@ jobs:
           echo "$SSH_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
-          
+
           # Ensure target directory exists on the droplet
           ssh "$USER@$HOST" "mkdir -p $TARGET_DIR"
-          
+
           # Deploy built assets (dist/) and clean up removed files
           rsync -avz --delete dist/ "$USER@$HOST:$TARGET_DIR"
